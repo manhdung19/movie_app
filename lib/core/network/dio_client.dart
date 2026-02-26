@@ -10,8 +10,8 @@ class DioClient {
           baseUrl: "https://api.themoviedb.org/3",
           // Mọi request gọi qua client này sẽ tự động gắn các param dưới đây
           queryParameters: {
-            'api_key':'', // add api key in here
-            'language':'vi-VN',
+            'api_key':'7f4a2567963ad3242cd6c5c90e6ae6db', // add api key in here
+            'language':'en-US',
           },
           connectTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 10),
