@@ -441,16 +441,16 @@ Tạo các màn hình và widget để hiển thị dữ liệu cho người dù
 
 #### `home_page.dart` - Màn hình chính
 - Hiển thị danh sách phim thịnh hành dạng Grid/List
+- Có `TextField` để nhập từ khóa
+- Hiển thị kết quả tìm kiếm
+- Debounce để tránh gọi API quá nhiều lần
 - Sử dụng `BlocProvider` để cung cấp `MovieListBloc`
 - Sử dụng `BlocBuilder` để lắng nghe state và render UI:
   - State Loading → Hiển thị `CircularProgressIndicator`
   - State Error → Hiển thị thông báo lỗi + nút "Thử lại"
   - State Loaded → Hiển thị `GridView` với danh sách phim
 
-#### `search_page.dart` - Màn hình tìm kiếm
-- Có `TextField` để nhập từ khóa
-- Hiển thị kết quả tìm kiếm
-- Debounce để tránh gọi API quá nhiều lần
+
 
 #### `favorites_page.dart` - Màn hình yêu thích
 - Hiển thị danh sách phim đã lưu
