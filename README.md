@@ -367,7 +367,7 @@ Mục tiêu chính của tuần này là xây dựng cây cầu vững chắc gi
 
 -   [ ] **Xây dựng Giao diện (UI):**
     -   [ ] Tạo màn hình chính `presentation/pages/home_page.dart`.
-    -   [ ] Sử dụng `BlocProvider` để cung cấp `MovieListBloc` cho cây widget.
+    -   [ ] Sử dụng `BlocProvider` để cung cấp `MovieListBloc` cho cây widget.và 
     -   [ ] Sử dụng `BlocBuilder` để lắng nghe state từ Bloc và render UI tương ứng:
         -   Nếu state là `Loading`, hiển thị một `CircularProgressIndicator`.
         -   Nếu state là `Error`, hiển thị một thông báo lỗi và nút "Thử lại".
@@ -379,6 +379,137 @@ Mục tiêu chính của tuần này là xây dựng cây cầu vững chắc gi
 
 **✅ Kết quả cuối tuần 3:** Bạn có một ứng dụng hoàn chỉnh có thể hiển thị danh sách phim thịnh hành. Giao diện người dùng có khả năng phản ứng với các trạng thái khác nhau của dữ liệu.
 
+
+# 📋 TỔNG QUAN TUẦN 3: LỚP PRESENTATION
+
+Tuần này chúng ta sẽ xây dựng lớp giao diện người dùng, kết nối logic nghiệp vụ với màn hình hiển thị. Gồm 3 phần chính:
+
+---
+
+## 🎯 PHẦN 1: STATE MANAGEMENT (BLoC Pattern)
+
+### Mục đích:
+Quản lý trạng thái ứng dụng (Loading, Success, Error) một cách có tổ chức, tách biệt logic khỏi UI.
+
+### Công việc cụ thể:
+
+#### 1.1. MovieListBloc (Hiển thị danh sách phim thịnh hành)
+
+**Event:** Các sự kiện từ UI
+- `FetchTrendingMovies`: Khi người dùng mở màn hình
+- `RefreshMovies`: Khi người dùng kéo để làm mới
+
+**State:** Các trạng thái UI
+- `MovieListInitial`: Trạng thái ban đầu
+- `MovieListLoading`: Đang tải dữ liệu
+- `MovieListLoaded`: Đã có dữ liệu phim
+- `MovieListError`: Có lỗi xảy ra
+
+**Nhiệm vụ:** Gọi use case `GetTrendingMovies`, xử lý kết quả và emit state tương ứng
+
+---
+
+#### 1.2. MovieSearchBloc (Tìm kiếm phim)
+
+**Event:** `SearchMovies(String query)`
+
+**State:** Tương tự MovieListBloc
+
+**Nhiệm vụ:** Gọi use case `SearchMovies` với từ khóa người dùng nhập
+
+---
+
+#### 1.3. FavoriteMoviesBloc (Quản lý phim yêu thích)
+
+**Event:**
+- `LoadFavoriteMovies`: Tải danh sách yêu thích
+- `AddFavoriteMovie`: Thêm phim vào yêu thích
+- `RemoveFavoriteMovie`: Xóa phim khỏi yêu thích
+
+**State:** Tương tự các bloc khác
+
+**Nhiệm vụ:** Gọi các use case về favorite
+
+---
+
+## 🎨 PHẦN 2: XÂY DỰNG GIAO DIỆN (UI)
+
+### Mục đích:
+Tạo các màn hình và widget để hiển thị dữ liệu cho người dùng
+
+### 2.1. Pages (Các màn hình)
+
+#### `home_page.dart` - Màn hình chính
+- Hiển thị danh sách phim thịnh hành dạng Grid/List
+- Sử dụng `BlocProvider` để cung cấp `MovieListBloc`
+- Sử dụng `BlocBuilder` để lắng nghe state và render UI:
+  - State Loading → Hiển thị `CircularProgressIndicator`
+  - State Error → Hiển thị thông báo lỗi + nút "Thử lại"
+  - State Loaded → Hiển thị `GridView` với danh sách phim
+
+#### `search_page.dart` - Màn hình tìm kiếm
+- Có `TextField` để nhập từ khóa
+- Hiển thị kết quả tìm kiếm
+- Debounce để tránh gọi API quá nhiều lần
+
+#### `favorites_page.dart` - Màn hình yêu thích
+- Hiển thị danh sách phim đã lưu
+- Cho phép xóa phim khỏi danh sách
+
+---
+
+### 2.2. Widgets (Thành phần tái sử dụng)
+
+#### `movie_card.dart`
+- Hiển thị poster phim
+- Tên phim, điểm đánh giá
+- Nút yêu thích (trái tim)
+- Khi tap vào sẽ chuyển sang màn hình chi tiết
+
+#### `loading_widget.dart`
+- Hiển thị `CircularProgressIndicator` với style nhất quán
+
+#### `error_display.dart`
+- Hiển thị icon lỗi
+- Message lỗi
+- Nút "Thử lại" để retry
+
+---
+
+## 🔧 PHẦN 3: DEPENDENCY INJECTION
+
+### Mục đích:
+Đăng ký các Bloc vào container để tự động inject dependencies
+
+### Công việc:
+Trong file `injection_container.dart`, thêm:
+```dart
+// Bloc
+sl.registerFactory(() => MovieListBloc(getTrendingMovies: sl()));
+sl.registerFactory(() => MovieSearchBloc(searchMovies: sl()));
+sl.registerFactory(() => FavoriteMoviesBloc(
+  getFavoriteMovies: sl(),
+  saveFavoriteMovie: sl(),
+  removeFavoriteMovie: sl(),
+));
+```
+
+---
+
+## 📝 CHECKLIST TUẦN 3
+
+- [ ] Tạo các BLoC classes với Events và States
+- [ ] Implement logic xử lý trong từng BLoC
+- [ ] Xây dựng 3 màn hình chính (Home, Search, Favorites)
+- [ ] Tạo các widget tái sử dụng (MovieCard, Loading, Error)
+- [ ] Đăng ký dependency injection cho các BLoC
+- [ ] Test UI với các trạng thái khác nhau
+- [ ] Kiểm tra navigation giữa các màn hình
+
+---
+
+**🎓 Kết quả mong đợi:**
+Ứng dụng có giao diện hoàn chỉnh, hiển thị danh sách phim, tìm kiếm và quản lý yêu thích với state management rõ ràng.
 ---
 
 ### Tuần 4: Hoàn thiện các tính năng (Tìm kiếm và Yêu thích)
